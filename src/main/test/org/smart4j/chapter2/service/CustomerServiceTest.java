@@ -22,5 +22,11 @@ public class CustomerServiceTest {
             System.out.println(customer.toString());
         }
     }
+    
+    @Test
+    public void getCustomerTest(){
+        Customer customer=customerService.getCustomer(1);
+        System.out.println("QueryResult:"+customer);
+    }
 
 }

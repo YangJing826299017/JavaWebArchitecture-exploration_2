@@ -20,6 +20,7 @@ import org.smart4j.chapter2.util.PropsUtil;
  */
 public class DataBaseHelper {
     private static final Logger LOGGER=LoggerFactory.getLogger(DataBaseHelper.class);
+    private static final ThreadLocal<Connection> CONNECTION_HOLDER=new ThreadLocal<>();
     private static final QueryRunner QUERY_RUNNER=new QueryRunner();
     private static final String DRIVER;
     private static final String URL;
@@ -41,19 +42,25 @@ public class DataBaseHelper {
     }
     
     public static Connection getConnection() {
-        Connection connection=null;
-        try {
-             connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
+        Connection connection=CONNECTION_HOLDER.get();
+        if(connection!=null)
             return connection;
+        
+        //connection为空
+        try {
+            connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
         } catch (SQLException e) {
             // TODO Auto-generated catch block
             LOGGER.error("获取连接失败",e);
             e.printStackTrace();
+        }finally {
+            CONNECTION_HOLDER.set(connection);
         }
         return connection;
     }
     
-    public static void closeConnection(Connection connection){
+    public static void closeConnection(){
+        Connection connection=CONNECTION_HOLDER.get();
         if(connection!=null){
             try {
                 connection.close();
@@ -61,11 +68,15 @@ public class DataBaseHelper {
                 // TODO Auto-generated catch block
                 LOGGER.error("关闭连接失败!",e);
                 e.printStackTrace();
+            }finally {
+                CONNECTION_HOLDER.remove();
             }
         }
+       
     }
     
-    public static <T>List<T> listEntity(Class<T>entityClass, Connection conn,String sql,Object... params){
+    public static <T>List<T> listEntity(Class<T>entityClass,String sql,Object... params){
+        Connection conn=getConnection();
         List<T> listEntity=null;
         try {
             listEntity=QUERY_RUNNER.query(conn, sql, new BeanListHandler<>(entityClass), params);
@@ -75,21 +86,25 @@ public class DataBaseHelper {
             e.printStackTrace();
             throw new RuntimeException(e);
         }finally {
-            closeConnection(conn);
+            closeConnection();
         }
         return listEntity;
     }
     
-    public static <T>T getEntity(Class<T> entityClass,Connection conn,String sql,Object... params){
+    public static <T>T getEntity(Class<T> entityClass,String sql,Object... params){
+        Connection conn=getConnection();
         T entity=null;
         try {
-            entity=QUERY_RUNNER.query(conn, sql, new BeanHandler<>(entityClass), params);
+            entity=QUERY_RUNNER.query(conn,sql, new BeanHandler<>(entityClass), params);
         } catch (SQLException e) {
             // TODO Auto-generated catch block
             LOGGER.error("sql语句:"+sql+"\t查询抛出异常",e);
             e.printStackTrace();
             throw new RuntimeException(e);
+        }finally {
+            closeConnection();
         }
+        
         return entity;
     }
 
