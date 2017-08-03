@@ -56,4 +56,12 @@ public class Customer {
         this.remark = remark;
     }
 
+    @Override
+    public String toString() {
+        return "Customer [id=" + id + ", name=" + name + ", contact=" + contact + ", telphone=" + telphone + ", email="
+                + email + ", remark=" + remark + "]";
+    }
+    
+    
+
 }
