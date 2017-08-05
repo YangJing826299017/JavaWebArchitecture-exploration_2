@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
+import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.handlers.BeanHandler;
 import org.apache.commons.dbutils.handlers.BeanListHandler;
@@ -29,6 +30,7 @@ public class DataBaseHelper {
     private static final Logger LOGGER=LoggerFactory.getLogger(DataBaseHelper.class);
     private static final ThreadLocal<Connection> CONNECTION_HOLDER=new ThreadLocal<>();
     private static final QueryRunner QUERY_RUNNER=new QueryRunner();
+    private static final BasicDataSource DATA_SOURCE=new BasicDataSource();
     private static final String DRIVER;
     private static final String URL;
     private static final String USERNAME;
@@ -41,11 +43,19 @@ public class DataBaseHelper {
         USERNAME=PropsUtil.getString(properties,"jdbc.username");
         PASSWORD=PropsUtil.getString(properties,"jdbc.password");
         
+        //采用DBCP加载数据源
+        DATA_SOURCE.setDriverClassName(DRIVER);
+        DATA_SOURCE.setUrl(URL);
+        DATA_SOURCE.setPassword(PASSWORD);
+        DATA_SOURCE.setUsername(USERNAME);
+        
+        /*
         try{
             Class.forName(DRIVER);
         }catch(ClassNotFoundException e){
             LOGGER.error("无法加载driver",e);
         }
+        */
     }
     
     public static Connection getConnection() {

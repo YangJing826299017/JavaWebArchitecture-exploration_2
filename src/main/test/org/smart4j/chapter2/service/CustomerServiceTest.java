@@ -17,12 +17,12 @@ public class CustomerServiceTest {
         customerService=new CustomerService();
     }
     
-    
+    @Test
     public void createCustomerTest(){
         System.out.println("------创建用户-----");
         Map<String,Object> map=new HashMap<>();
-        map.put("name","customer6");
-        map.put("contact","Black");
+        map.put("name","customer7");
+        map.put("contact","Zoo");
         map.put("telphone", "XXXX");
         map.put("email", "xxxxxx@qq.com");
         map.put("remark", "无备注");
