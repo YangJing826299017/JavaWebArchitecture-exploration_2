@@ -193,7 +193,7 @@ public class DataBaseHelper {
     //删除实体
     public static boolean deleteEntity(Class<?> classEntity,Long id){
         String tableName=getTableName(classEntity);
-        StringBuilder sb=new StringBuilder("delete from "+tableName+" where id="+id);
+        StringBuilder sb=new StringBuilder("delete from "+tableName+" where id=?");
         int result=executeUpdate(sb.toString(),id);
         return result==1;
     }
