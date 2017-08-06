@@ -243,13 +243,6 @@ public class DataBaseHelper {
         return result==1;
     }
     
-    public static void main(String[] args) {
-        Map<String,Object> map=new HashMap<>();
-        map.put("name","杨景");
-        map.put("sex","男");
-        DataBaseHelper.updateEntity(Customer.class, map, 15240069l);
-    }
-    
     
     private static String getTableName(Class<?> classEntity){
         return classEntity.getSimpleName();
